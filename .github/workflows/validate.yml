@@ -1,0 +1,16 @@
+name: validate-source
+on: [push, pull_request]
+jobs:
+  source-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify required project files
+        run: |
+          test -f database/schema.sql
+          test -f database/packages/pkg_work_orders.pks
+          test -f database/packages/pkg_work_orders.pkb
+          test -f apex/page_design.md
+      - name: Reject accidental credentials
+        run: |
+          ! grep -RniE "(password|secret|token)[[:space:]]*=[[:space:]]*['\"][^'\"]+" . --exclude-dir=.git
